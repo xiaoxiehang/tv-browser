@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#000000">
+
+    <WebView
+        android:id="@+id/webView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <ProgressBar
+        android:id="@+id/progress"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="4dp"
+        android:layout_gravity="top"
+        android:progressTint="@color/accent"
+        android:progressBackgroundTint="#00000000"
+        android:visibility="gone" />
+
+    <!-- 悬浮胶囊工具栏 -->
+    <LinearLayout
+        android:id="@+id/topBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|center_horizontal"
+        android:layout_marginLeft="200dp"
+        android:layout_marginRight="200dp"
+        android:layout_marginTop="24dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:background="@drawable/bg_pill"
+        android:padding="10dp">
+
+        <Button
+            android:id="@+id/homeBtn"
+            android:layout_width="96dp"
+            android:layout_height="60dp"
+            android:background="@drawable/bg_card"
+            android:text="主页"
+            android:textSize="20sp"
+            android:textColor="@color/ink"
+            android:focusable="true"
+            android:clickable="true" />
+
+        <TextView
+            android:id="@+id/urlBar"
+            android:layout_width="0dp"
+            android:layout_height="60dp"
+            android:layout_weight="1"
+            android:layout_marginStart="10dp"
+            android:background="@drawable/bg_card"
+            android:gravity="center_vertical"
+            android:paddingStart="22dp"
+            android:paddingEnd="22dp"
+            android:textSize="19sp"
+            android:textColor="@color/ink"
+            android:singleLine="true"
+            android:ellipsize="middle"
+            android:focusable="true"
+            android:clickable="true" />
+
+        <Button
+            android:id="@+id/menuBtn"
+            android:layout_width="96dp"
+            android:layout_height="60dp"
+            android:layout_marginStart="10dp"
+            android:background="@drawable/bg_card"
+            android:text="菜单"
+            android:textSize="20sp"
+            android:textColor="@color/ink"
+            android:focusable="true"
+            android:clickable="true" />
+    </LinearLayout>
+
+    <!-- 虚拟光标 -->
+    <View
+        android:id="@+id/cursor"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:background="@drawable/cursor_ring"
+        android:visibility="gone" />
+</FrameLayout>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">鸡仔浏览器</string>
+    <string name="app_tagline">为大屏而生</string>
+    <string name="search_hint">输入网址或搜索关键词</string>
+    <string name="go">前往</string>
+    <string name="my_bookmarks">我的书签</string>
+    <string name="history">历史记录</string>
+    <string name="action_remote">手机遥控</string>
+    <string name="action_remote_desc">扫码配对 · 手机变遥控器</string>
+    <string name="action_add">添加书签</string>
+    <string name="action_add_desc">收藏常用网站</string>
+    <string name="action_clear">清空历史</string>
+    <string name="action_clear_desc">删除浏览记录</string>
+    <string name="empty_bookmark">还没有书签\n打开网页后按菜单键，或点上方「添加书签」</string>
+    <string name="empty_history">还没有浏览记录，去看看外面的世界吧</string>
+    <string name="menu">菜单</string>
+    <string name="qr_title">手机遥控</string>
+</resources>

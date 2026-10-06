@@ -1,0 +1,329 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:background="@drawable/bg_root"
+    android:scrollbars="none">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:clipChildren="false"
+        android:paddingLeft="64dp"
+        android:paddingRight="64dp"
+        android:paddingTop="44dp"
+        android:paddingBottom="64dp">
+
+        <!-- 品牌栏 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:layout_width="68dp"
+                android:layout_height="68dp"
+                android:background="@drawable/bg_logo"
+                android:text="鸡"
+                android:textColor="#FFFFFF"
+                android:textSize="36sp"
+                android:textStyle="bold"
+                android:gravity="center" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginStart="20dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/app_name"
+                    android:textSize="38sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/ink" />
+
+                <TextView
+                    android:id="@+id/verLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/app_tagline"
+                    android:textSize="16sp"
+                    android:textColor="@color/muted"
+                    android:layout_marginTop="4dp" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- 搜索 Hero -->
+        <LinearLayout
+            android:id="@+id/searchBox"
+            android:layout_width="match_parent"
+            android:layout_height="104dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:background="@drawable/bg_search_idle"
+            android:layout_marginTop="36dp"
+            android:paddingLeft="12dp"
+            android:paddingRight="12dp">
+
+            <EditText
+                android:id="@+id/urlInput"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@null"
+                android:hint="@string/search_hint"
+                android:textColor="@color/ink"
+                android:textColorHint="@color/faint"
+                android:textSize="26sp"
+                android:singleLine="true"
+                android:imeOptions="actionGo"
+                android:inputType="textUri"
+                android:paddingLeft="28dp"
+                android:paddingRight="16dp"
+                android:nextFocusRight="@+id/goBtn" />
+
+            <Button
+                android:id="@+id/goBtn"
+                android:layout_width="200dp"
+                android:layout_height="76dp"
+                android:background="@drawable/bg_btn_primary"
+                android:text="@string/go"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:textColor="#FFFFFF"
+                android:nextFocusLeft="@+id/urlInput" />
+        </LinearLayout>
+
+        <!-- 快捷操作 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:clipChildren="false"
+            android:layout_marginTop="28dp">
+
+            <LinearLayout
+                android:id="@+id/companionCard"
+                android:elevation="2dp"
+                android:layout_width="0dp"
+                android:layout_height="172dp"
+                android:layout_weight="1"
+                android:layout_marginEnd="10dp"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:background="@drawable/bg_card"
+                android:focusable="true"
+                android:clickable="true">
+
+                <ImageView
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:src="@drawable/ic_phone"
+                    android:background="@drawable/bg_icon_tile"
+                    android:padding="10dp"
+                    android:layout_marginBottom="12dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/action_remote"
+                    android:textSize="24sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/ink" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/action_remote_desc"
+                    android:textSize="15sp"
+                    android:textColor="@color/muted"
+                    android:layout_marginTop="6dp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/addCard"
+                android:elevation="2dp"
+                android:layout_width="0dp"
+                android:layout_height="172dp"
+                android:layout_weight="1"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:background="@drawable/bg_card"
+                android:focusable="true"
+                android:clickable="true">
+
+                <ImageView
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:src="@drawable/ic_star"
+                    android:background="@drawable/bg_icon_tile"
+                    android:padding="10dp"
+                    android:layout_marginBottom="12dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/action_add"
+                    android:textSize="24sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/ink" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/action_add_desc"
+                    android:textSize="15sp"
+                    android:textColor="@color/muted"
+                    android:layout_marginTop="6dp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/clearCard"
+                android:elevation="2dp"
+                android:layout_width="0dp"
+                android:layout_height="172dp"
+                android:layout_weight="1"
+                android:layout_marginStart="10dp"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:background="@drawable/bg_card"
+                android:focusable="true"
+                android:clickable="true">
+
+                <ImageView
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:src="@drawable/ic_trash"
+                    android:background="@drawable/bg_icon_tile"
+                    android:padding="10dp"
+                    android:layout_marginBottom="12dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/action_clear"
+                    android:textSize="24sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/ink" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/action_clear_desc"
+                    android:textSize="15sp"
+                    android:textColor="@color/muted"
+                    android:layout_marginTop="6dp" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- 书签 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginTop="44dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/my_bookmarks"
+                android:textSize="28sp"
+                android:textStyle="bold"
+                android:textColor="@color/ink" />
+
+            <TextView
+                android:id="@+id/bookmarkCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                android:textColor="@color/faint" />
+        </LinearLayout>
+
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:clipChildren="false"
+            android:clipToPadding="false"
+            android:padding="10dp"
+            android:scrollbars="none">
+
+            <LinearLayout
+                android:id="@+id/bookmarkRow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:clipChildren="false" />
+        </HorizontalScrollView>
+
+        <TextView
+            android:id="@+id/emptyBookmark"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/empty_bookmark"
+            android:textSize="20sp"
+            android:textColor="@color/faint"
+            android:lineSpacingExtra="8dp"
+            android:padding="24dp" />
+
+        <!-- 历史记录 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginTop="36dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/history"
+                android:textSize="28sp"
+                android:textStyle="bold"
+                android:textColor="@color/ink" />
+
+            <TextView
+                android:id="@+id/historyCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                android:textColor="@color/faint" />
+        </LinearLayout>
+
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:clipChildren="false"
+            android:clipToPadding="false"
+            android:padding="10dp"
+            android:scrollbars="none">
+
+            <LinearLayout
+                android:id="@+id/historyRow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:clipChildren="false" />
+        </HorizontalScrollView>
+
+        <TextView
+            android:id="@+id/emptyHistory"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/empty_history"
+            android:textSize="20sp"
+            android:textColor="@color/faint"
+            android:padding="24dp" />
+    </LinearLayout>
+</ScrollView>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 纯 framework 深色主题，零 AndroidX 依赖 -->
+    <style name="Theme.JizaiTvBrowser" parent="@android:style/Theme.Material.NoActionBar">
+        <item name="android:windowBackground">@color/bg</item>
+        <item name="android:colorBackground">@color/bg</item>
+        <item name="android:textColor">@color/ink</item>
+        <item name="android:textColorHint">@color/muted</item>
+    </style>
+
+    <!-- 可聚焦卡片：焦点态高亮边框 -->
+    <style name="FocusCardStyle">
+        <item name="android:background">@drawable/bg_card</item>
+        <item name="android:focusable">true</item>
+        <item name="android:clickable">true</item>
+    </style>
+</resources>
