@@ -387,7 +387,7 @@ class VideoSourceScreen(private val act: MainActivity, parent: ViewGroup) {
             text = item.desc
             textSize = 19f
             setTextColor(0xFF6E6E73.toInt())
-            setLineSpacingExtra(dp(6).toFloat())
+            lineSpacingExtra = dp(6).toFloat()
         })
         AlertDialog.Builder(act)
             .setTitle(item.title)
