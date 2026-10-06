@@ -20,6 +20,8 @@ interface CompanionListener {
     fun onRemoteKey(key: String)
     fun onRemoteText(text: String)
     fun onRemoteOpen(url: String)
+    /** 投屏：手机发来视频 URL */
+    fun onCast(url: String)
 }
 
 /**
@@ -141,6 +143,7 @@ class CompanionServer(
                     "key" -> listener.onRemoteKey(json.optString("key"))
                     "text" -> listener.onRemoteText(json.optString("text"))
                     "open" -> listener.onRemoteOpen(json.optString("url"))
+                    "cast" -> listener.onCast(json.optString("url"))
                 }
             }
         }

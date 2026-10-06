@@ -46,6 +46,12 @@ label{font-size:13px;color:#8B93B0;display:block;margin:14px 0 6px}
   <button id="sendUrl">打开</button>
 </div>
 
+<label>投屏视频到电视（自动全屏播放）</label>
+<div class="row">
+  <input id="castUrl" placeholder="视频页面地址 https://…" inputmode="url">
+  <button id="sendCast">投屏</button>
+</div>
+
 <div class="hint">手机和电视需在同一 Wi-Fi（或同一 Tailscale 网络）下<br>方向键也可直接遥控电视端焦点</div>
 
 <script>
@@ -78,6 +84,10 @@ document.getElementById('sendTxt').onclick = () => {
 document.getElementById('sendUrl').onclick = () => {
   const v = document.getElementById('url').value.trim();
   if (v && ws) ws.send(JSON.stringify({type:'open', url:v}));
+};
+document.getElementById('sendCast').onclick = () => {
+  const v = document.getElementById('castUrl').value.trim();
+  if (v && ws) ws.send(JSON.stringify({type:'cast', url:v}));
 };
 connect();
 </script>

@@ -15,7 +15,7 @@ class HomeScreen(private val act: MainActivity, parent: ViewGroup) {
 
     private val store = act.store
     private val d = act.resources.displayMetrics.density
-    private val root: View = LayoutInflater.from(act).inflate(R.layout.view_home, parent, false)
+    val root: View = LayoutInflater.from(act).inflate(R.layout.view_home, parent, false)
     private val urlInput: EditText = root.findViewById(R.id.urlInput)
     private val searchBox: View = root.findViewById(R.id.searchBox)
     private val bookmarkRow: LinearLayout = root.findViewById(R.id.bookmarkRow)
@@ -42,6 +42,9 @@ class HomeScreen(private val act: MainActivity, parent: ViewGroup) {
             )
         }
         root.findViewById<View>(R.id.goBtn).setOnClickListener { go() }
+        val voiceBtn = root.findViewById<View>(R.id.voiceBtn)
+        FocusKit.lift(voiceBtn, 1.08f)
+        voiceBtn.setOnClickListener { startVoice() }
 
         val companionCard = root.findViewById<View>(R.id.companionCard)
         val addCard = root.findViewById<View>(R.id.addCard)
@@ -70,6 +73,14 @@ class HomeScreen(private val act: MainActivity, parent: ViewGroup) {
     private fun go() {
         val t = urlInput.text.toString().trim()
         if (t.isNotEmpty()) act.openUrl(t)
+    }
+
+    /** 语音搜索：识别结果填入搜索框，不自动提交 */
+    private fun startVoice() {
+        act.requestVoiceInput { text ->
+            urlInput.setText(text)
+            urlInput.setSelection(text.length)
+        }
     }
 
     fun refresh() {

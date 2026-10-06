@@ -88,6 +88,17 @@
                 android:nextFocusRight="@+id/goBtn" />
 
             <Button
+                android:id="@+id/voiceBtn"
+                android:layout_width="76dp"
+                android:layout_height="76dp"
+                android:layout_marginEnd="8dp"
+                android:background="@drawable/bg_voice_btn"
+                android:text="🎤"
+                android:textSize="28sp"
+                android:focusable="true"
+                android:clickable="true" />
+
+            <Button
                 android:id="@+id/goBtn"
                 android:layout_width="200dp"
                 android:layout_height="76dp"

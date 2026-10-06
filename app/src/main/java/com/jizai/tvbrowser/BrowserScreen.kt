@@ -2,7 +2,9 @@ package com.jizai.tvbrowser
 
 import android.annotation.SuppressLint
 import android.app.AlertDialog
+import android.content.Intent
 import android.graphics.Bitmap
+import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.os.SystemClock
@@ -13,6 +15,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.webkit.WebChromeClient
+import android.webkit.WebResourceRequest
+import android.webkit.WebResourceResponse
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.EditText
@@ -43,7 +47,7 @@ class BrowserScreen(private val act: MainActivity, parent: ViewGroup, startUrl: 
                     "document.head.appendChild(s);}})()"
     }
 
-    private val root: View = LayoutInflater.from(act).inflate(R.layout.view_browser, parent, false)
+    val root: View = LayoutInflater.from(act).inflate(R.layout.view_browser, parent, false)
     private val webView: WebView = root.findViewById(R.id.webView)
     private val cursor: View = root.findViewById(R.id.cursor)
     private val urlBar: TextView = root.findViewById(R.id.urlBar)
@@ -58,6 +62,38 @@ class BrowserScreen(private val act: MainActivity, parent: ViewGroup, startUrl: 
     private var customView: View? = null
     private var customCallback: WebChromeClient.CustomViewCallback? = null
     private var destroyed = false
+    private var castArmed = false
+
+    /** 标签页标题变化时通知 MainActivity 刷新标签栏 */
+    var onTabUpdate: (() -> Unit)? = null
+
+    fun pageTitle(): String = try {
+        webView.title ?: ""
+    } catch (_: Exception) {
+        ""
+    }
+
+    fun load(url: String) {
+        if (!destroyed) webView.loadUrl(url)
+    }
+
+    /** 投屏：页面加载后自动找第一个 video 播放并尝试全屏 */
+    fun autoPlayVideo() {
+        castArmed = true
+        tryCastPlay()
+        webView.postDelayed({ if (castArmed) tryCastPlay() }, 4000)
+    }
+
+    private fun tryCastPlay() {
+        if (destroyed) return
+        webView.evaluateJavascript(
+            "(function(){var v=document.querySelector('video');if(!v)return 'no-video';" +
+                    "try{v.play()}catch(e){};" +
+                    "var r=v.requestFullscreen||v.webkitRequestFullscreen;" +
+                    "if(r){try{r.call(v)}catch(e){}}return 'ok'})()",
+            null
+        )
+    }
 
     private val hideHandler = Handler(Looper.getMainLooper())
     private val hideRunnable = Runnable { hideTopBar() }
@@ -111,6 +147,7 @@ class BrowserScreen(private val act: MainActivity, parent: ViewGroup, startUrl: 
                 urlBar.text = prettyUrl(url)
                 progress.visibility = View.VISIBLE
                 pokeTopBar()
+                onTabUpdate?.invoke()
             }
 
             override fun onPageFinished(view: WebView, url: String) {
@@ -119,7 +156,27 @@ class BrowserScreen(private val act: MainActivity, parent: ViewGroup, startUrl: 
                 val t = view.title
                 val u = view.url
                 if (!t.isNullOrBlank() && !u.isNullOrBlank()) act.store.addHistory(t, u)
+                if (castArmed) {
+                    castArmed = false
+                    tryCastPlay()
+                }
+                onTabUpdate?.invoke()
             }
+
+            /** 去广告：子资源 URL 命中规则直接返回空响应 */
+            override fun shouldInterceptRequest(
+                view: WebView,
+                request: WebResourceRequest
+            ): WebResourceResponse? {
+                if (!request.isForMainFrame && AdBlocker.shouldBlock(request.url.toString())) {
+                    return AdBlocker.emptyResponse()
+                }
+                return super.shouldInterceptRequest(view, request)
+            }
+        }
+        // 下载：接到系统 DownloadManager，通知栏显示进度
+        webView.setDownloadListener { url, userAgent, contentDisposition, mimeType, _ ->
+            act.startDownload(url, userAgent, contentDisposition, mimeType)
         }
         webView.webChromeClient = object : WebChromeClient() {
             override fun onProgressChanged(view: WebView, p: Int) {
@@ -321,6 +378,9 @@ class BrowserScreen(private val act: MainActivity, parent: ViewGroup, startUrl: 
                 }
             },
             "手机遥控" to { QrDialog.show(act) },
+            "后台播放" to { startBackgroundAudio() },
+            "新标签页" to { act.newTab("about:blank") },
+            "关闭标签页" to { act.closeCurrentTab() },
             "返回主页" to { act.showHome() },
         )
 
@@ -354,9 +414,21 @@ class BrowserScreen(private val act: MainActivity, parent: ViewGroup, startUrl: 
         dlg.show()
     }
 
+    /** 后台音频：把当前 WebView 交给前台 Service 保活，通知栏可暂停/关闭 */
+    private fun startBackgroundAudio() {
+        AudioService.target = webView
+        val intent = Intent(act, AudioService::class.java)
+        try {
+            if (Build.VERSION.SDK_INT >= 26) act.startForegroundService(intent)
+            else act.startService(intent)
+            Toast.makeText(act, "已转入后台播放，按主页键可切出", Toast.LENGTH_LONG).show()
+        } catch (e: Exception) {
+            Toast.makeText(act, "后台播放启动失败", Toast.LENGTH_SHORT).show()
+        }
+    }
+
     /** 手机伴侣发来的文本：注入到网页输入框 */
-    fun onRemoteText(text: String) {
-        val q = JSONObject.quote(text)
+    fun onRemoteText(text: String) {        val q = JSONObject.quote(text)
         webView.evaluateJavascript(
             "(function(){var T=$q;var el=document.activeElement;" +
                     "if(el&&(el.tagName==='INPUT'||el.tagName==='TEXTAREA')){" +
