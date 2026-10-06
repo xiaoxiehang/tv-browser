@@ -26,9 +26,20 @@ jobs:
       - name: 打包 debug APK
         run: ./gradlew assembleDebug --no-daemon
 
-      - name: 上传 APK
+      - name: 重命名 APK
+        run: cp app/build/outputs/apk/debug/app-debug.apk jizai-tv-browser.apk
+
+      - name: 上传 APK（构件保留 30 天）
         uses: actions/upload-artifact@v4
         with:
           name: jizai-tv-browser-debug
-          path: app/build/outputs/apk/debug/*.apk
+          path: jizai-tv-browser.apk
           retention-days: 30
+
+      - name: 发布到 latest
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: latest
+          name: 最新构建
+          body: main 分支最新自动构建，下载后直接安装。
+          files: jizai-tv-browser.apk
