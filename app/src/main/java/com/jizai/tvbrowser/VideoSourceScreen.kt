@@ -34,6 +34,7 @@ class VideoSourceScreen(private val act: MainActivity, parent: ViewGroup) {
     private val emptyView: TextView = root.findViewById(R.id.emptyView)
 
     private var currentIndex = -1
+    private var currentType = "tmdb"
     private var loading = false
 
     private data class VideoItem(
@@ -148,7 +149,7 @@ class VideoSourceScreen(private val act: MainActivity, parent: ViewGroup) {
     // ---------- 添加 / 编辑源 ----------
     private fun showEditDialog(index: Int) {
         val existing = store.list().getOrNull(index)
-        var type = existing?.type?.takeIf { it == "json" } ?: "tmdb"
+        var type = existing?.type?.takeIf { it in setOf("tmdb", "json", "m3u") } ?: "tmdb"
         val layout = LinearLayout(act).apply {
             orientation = LinearLayout.VERTICAL
             setPadding(dp(48), dp(24), dp(48), dp(8))
@@ -164,12 +165,28 @@ class VideoSourceScreen(private val act: MainActivity, parent: ViewGroup) {
         )
         val keyEt = styledInput("API Key（TMDB 在 themoviedb.org 申请）", existing?.apiKey ?: "")
         fun refreshType() {
-            typeBtn.text = "类型：${if (type == "tmdb") "TMDB" else "通用 JSON"}（点击切换）"
-            urlEt.hint = if (type == "tmdb") "接口地址" else "JSON 地址（返回 {\"list\":[…]}）"
+            typeBtn.text = "类型：${
+                when (type) {
+                    "tmdb" -> "TMDB"
+                    "json" -> "通用 JSON"
+                    else -> "M3U 直播"
+                }
+            }（点击切换）"
+            urlEt.hint = when (type) {
+                "tmdb" -> "接口地址"
+                "json" -> "JSON 地址（返回 {\"list\":[…]}）"
+                else -> "M3U 播放列表地址（https://…/live.m3u）"
+            }
+            // M3U 不需要 API Key
+            keyEt.visibility = if (type == "m3u") View.GONE else View.VISIBLE
         }
         refreshType()
         typeBtn.setOnClickListener {
-            type = if (type == "tmdb") "json" else "tmdb"
+            type = when (type) {
+                "tmdb" -> "json"
+                "json" -> "m3u"
+                else -> "tmdb"
+            }
             refreshType()
         }
         layout.addView(nameEt)
@@ -228,13 +245,19 @@ class VideoSourceScreen(private val act: MainActivity, parent: ViewGroup) {
             promptTmdbKey(i, s)
             return
         }
+        currentType = s.type
         contentTitle.text = s.name
         showEmpty("加载中…")
         loading = true
-        val fetcher = if (s.type == "tmdb") ::fetchTmdb else ::fetchJson
+        val fetcher = when (s.type) {
+            "tmdb" -> ::fetchTmdb
+            "m3u" -> ::fetchM3u
+            else -> ::fetchJson
+        }
         fetcher(s) { items ->
             loading = false
             if (items.isEmpty()) showEmpty("没有内容\n检查接口地址和 Key 是否正确")
+            else if (s.type == "m3u") renderGroupedGrid(items)
             else renderGrid(items)
         }
     }
@@ -270,45 +293,88 @@ class VideoSourceScreen(private val act: MainActivity, parent: ViewGroup) {
     private fun renderGrid(items: List<VideoItem>) {
         emptyView.visibility = View.GONE
         contentGrid.removeAllViews()
+        items.forEachIndexed { i, item ->
+            contentGrid.addView(makeVideoCard(item, items, i))
+        }
+    }
+
+    /** M3U 频道：按 group-title 分组显示，无分组的放"全部" */
+    private fun renderGroupedGrid(items: List<VideoItem>) {
+        emptyView.visibility = View.GONE
+        contentGrid.removeAllViews()
+        val groups = items.groupBy { it.desc.ifBlank { "全部" } }
+        groups.forEach { (group, list) ->
+            val header = TextView(act).apply {
+                text = "$group（${list.size}）"
+                textSize = 22f
+                setTextColor(0xFFFF385C.toInt())
+                setPadding(0, dp(20), 0, dp(8))
+            }
+            header.layoutParams = GridLayout.LayoutParams().apply {
+                columnSpec = GridLayout.spec(0, 4)
+                width = GridLayout.LayoutParams.MATCH_PARENT
+                height = GridLayout.LayoutParams.WRAP_CONTENT
+            }
+            contentGrid.addView(header)
+            list.forEachIndexed { i, item ->
+                contentGrid.addView(makeVideoCard(item, list, i))
+            }
+        }
+    }
+
+    private fun makeVideoCard(item: VideoItem, siblings: List<VideoItem>, pos: Int): View {
         val cols = 4
         val gap = dp(24)
         val cardW = (act.resources.displayMetrics.widthPixels - dp(128) - gap * (cols - 1)) / cols
         val imgH = cardW * 3 / 2
-        items.forEach { item ->
-            val card = LinearLayout(act).apply {
-                orientation = LinearLayout.VERTICAL
-                setBackgroundResource(R.drawable.bg_card)
-                isFocusable = true
-                isClickable = true
-                elevation = dp(2).toFloat()
-                setPadding(dp(12), dp(12), dp(12), dp(12))
-            }
-            val lp = GridLayout.LayoutParams().apply {
-                width = cardW
-                height = GridLayout.LayoutParams.WRAP_CONTENT
-                setMargins(0, 0, gap, dp(24))
-            }
-            card.layoutParams = lp
-            val iv = ImageView(act).apply {
-                layoutParams = LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.MATCH_PARENT, imgH
-                )
-                scaleType = ImageView.ScaleType.CENTER_CROP
-                setBackgroundColor(0xFFF1F1F3.toInt())
-            }
-            card.addView(iv)
-            VideoImageLoader.load(item.cover, iv)
-            card.addView(TextView(act).apply {
-                text = item.title
-                textSize = 19f
-                setTextColor(0xFF1D1D1F.toInt())
-                maxLines = 2
-                setPadding(0, dp(10), 0, dp(4))
-            })
-            FocusKit.lift(card, 1.04f)
-            card.setOnClickListener { showDetail(item) }
-            contentGrid.addView(card)
+        val card = LinearLayout(act).apply {
+            orientation = LinearLayout.VERTICAL
+            setBackgroundResource(R.drawable.bg_card)
+            isFocusable = true
+            isClickable = true
+            elevation = dp(2).toFloat()
+            setPadding(dp(12), dp(12), dp(12), dp(12))
         }
+        val lp = GridLayout.LayoutParams().apply {
+            width = cardW
+            height = GridLayout.LayoutParams.WRAP_CONTENT
+            setMargins(0, 0, gap, dp(24))
+        }
+        card.layoutParams = lp
+        val iv = ImageView(act).apply {
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT, imgH
+            )
+            scaleType = ImageView.ScaleType.CENTER_CROP
+            setBackgroundColor(0xFFF1F1F3.toInt())
+        }
+        card.addView(iv)
+        VideoImageLoader.load(item.cover, iv)
+        card.addView(TextView(act).apply {
+            text = item.title
+            textSize = 19f
+            setTextColor(0xFF1D1D1F.toInt())
+            maxLines = 2
+            setPadding(0, dp(10), 0, dp(4))
+        })
+        FocusKit.lift(card, 1.04f)
+        card.setOnClickListener {
+            // 直播频道：直接进播放器；普通视频源：走详情弹窗
+            if (currentType == "m3u") playChannel(siblings, pos)
+            else showDetail(item)
+        }
+        return card
+    }
+
+    /** 直播频道：ExoPlayer 全屏播放，列表用于上下换台 */
+    private fun playChannel(items: List<VideoItem>, pos: Int) {
+        val intent = android.content.Intent(act, PlayerActivity::class.java).apply {
+            putStringArrayListExtra("titles", ArrayList(items.map { it.title }))
+            putStringArrayListExtra("urls", ArrayList(items.map { it.url }))
+            putStringArrayListExtra("logos", ArrayList(items.map { it.cover }))
+            putExtra("index", pos)
+        }
+        act.startActivity(intent)
     }
 
     // ---------- 详情弹窗 ----------
@@ -392,5 +458,59 @@ class VideoSourceScreen(private val act: MainActivity, parent: ViewGroup) {
                 act.runOnUiThread { cb(emptyList()) }
             }
         }.start()
+    }
+
+    // ---------- M3U 直播源 ----------
+    private fun fetchM3u(s: VideoSource, cb: (List<VideoItem>) -> Unit) {
+        Thread {
+            try {
+                val items = parseM3u(httpGet(s.apiUrl))
+                act.runOnUiThread { cb(items) }
+            } catch (_: Exception) {
+                act.runOnUiThread { cb(emptyList()) }
+            }
+        }.start()
+    }
+
+    /**
+     * 解析 M3U 播放列表：
+     * #EXTINF:-1 tvg-name="CCTV1" tvg-logo="http://…" group-title="央视",CCTV-1 综合
+     * http://example.com/cctv1.m3u8
+     * → VideoItem(title=频道名, cover=台标, url=流地址, desc=分组名)
+     */
+    private fun parseM3u(text: String): List<VideoItem> {
+        val items = mutableListOf<VideoItem>()
+        var pendingName = ""
+        var pendingLogo = ""
+        var pendingGroup = ""
+        // 逗号分割时跳过引号内的逗号
+        val commaOutsideQuotes = Regex(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)")
+        fun attr(line: String, key: String): String =
+            Regex("$key=\"([^\"]*)\"").find(line)?.groupValues?.get(1) ?: ""
+        for (raw in text.lineSequence()) {
+            val line = raw.trim()
+            if (line.startsWith("#EXTINF")) {
+                val display = line.split(commaOutsideQuotes).lastOrNull()?.trim() ?: ""
+                val tvgName = attr(line, "tvg-name")
+                pendingName = display.ifBlank { tvgName }
+                pendingLogo = attr(line, "tvg-logo")
+                pendingGroup = attr(line, "group-title")
+            } else if (line.isNotBlank() && !line.startsWith("#")) {
+                // 流地址行
+                val title = pendingName.ifBlank { line.substringAfterLast("/").substringBefore("?") }
+                if (title.isNotBlank()) {
+                    items += VideoItem(
+                        title = title,
+                        cover = pendingLogo,
+                        url = line,
+                        desc = pendingGroup
+                    )
+                }
+                pendingName = ""
+                pendingLogo = ""
+                pendingGroup = ""
+            }
+        }
+        return items
     }
 }

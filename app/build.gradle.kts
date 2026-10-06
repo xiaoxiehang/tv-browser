@@ -11,8 +11,8 @@ android {
         applicationId = "com.jizai.tvbrowser"
         minSdk = 24
         targetSdk = 34
-        versionCode = 6
-        versionName = "0.5.0"
+        versionCode = 7
+        versionName = "0.6.0"
     }
 
     buildTypes {
@@ -38,4 +38,8 @@ dependencies {
     implementation("org.java-websocket:Java-WebSocket:1.5.6")
     // 二维码生成
     implementation("com.google.zxing:core:3.5.3")
+    // 直播播放：ExoPlayer（HLS 必备 media3-hls）
+    implementation("androidx.media3:media3-exoplayer:1.4.1")
+    implementation("androidx.media3:media3-ui:1.4.1")
+    implementation("androidx.media3:media3-hls:1.4.1")
 }

@@ -62,6 +62,19 @@
             android:clickable="true" />
 
         <Button
+            android:id="@+id/sniffBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="60dp"
+            android:layout_marginStart="10dp"
+            android:background="@drawable/bg_card"
+            android:text="🎬"
+            android:textSize="20sp"
+            android:textColor="@color/ink"
+            android:focusable="true"
+            android:clickable="true"
+            android:visibility="gone" />
+
+        <Button
             android:id="@+id/menuBtn"
             android:layout_width="96dp"
             android:layout_height="60dp"

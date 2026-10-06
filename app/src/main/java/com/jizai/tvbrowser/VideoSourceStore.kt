@@ -8,6 +8,8 @@ import org.json.JSONObject
  * 视频源配置。
  * - type = "tmdb"：TMDB 官方 API，apiUrl 如 https://api.themoviedb.org/3，apiKey 用户自己填
  * - type = "json"：通用 JSON 源，接口返回 { "list": [ { "title", "cover", "url", "desc" } ] }
+ * - type = "m3u"：M3U 直播源，apiUrl 直接填 M3U 播放列表地址（如 https://example.com/live.m3u），
+ *   解析 #EXTINF 频道列表（tvg-name/tvg-logo/group-title）。不内置任何源地址，用户自己添加。
  *
  * 只支持合法视频源：不在代码里内置、推荐任何未授权片源地址。
  */

@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.Intent
 import android.graphics.Bitmap
+import android.net.Uri
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
@@ -19,11 +20,13 @@ import android.webkit.WebResourceRequest
 import android.webkit.WebResourceResponse
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import android.widget.Button
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
+import org.json.JSONArray
 import org.json.JSONObject
 
 /**
@@ -45,6 +48,22 @@ class BrowserScreen(private val act: MainActivity, parent: ViewGroup, startUrl: 
                     "if(!s){s=document.createElement('style');s.id='jizai-focus';" +
                     "s.textContent='*:focus{outline:3px solid #FF385C!important;outline-offset:2px!important}';" +
                     "document.head.appendChild(s);}})()"
+        // 视频嗅探：URL 后缀匹配
+        private val VIDEO_EXTS =
+            listOf(".mp4", ".m3u8", ".flv", ".webm", ".mov", ".mkv", ".avi", ".ts")
+        // 视频嗅探：JS 收集页面内 <video> 标签地址
+        private const val VIDEO_PROBE_JS =
+            "(function(){var r=[];" +
+                    "document.querySelectorAll('video').forEach(function(v){" +
+                    "if(v.currentSrc)r.push(v.currentSrc);" +
+                    "if(v.src)r.push(v.src);" +
+                    "v.querySelectorAll('source').forEach(function(s){if(s.src)r.push(s.src);});});" +
+                    "return JSON.stringify(r);})()"
+
+        fun isVideoUrl(url: String): Boolean {
+            val u = url.lowercase().substringBefore("?").substringBefore("#")
+            return VIDEO_EXTS.any { u.endsWith(it) }
+        }
     }
 
     val root: View = LayoutInflater.from(act).inflate(R.layout.view_browser, parent, false)
@@ -53,6 +72,7 @@ class BrowserScreen(private val act: MainActivity, parent: ViewGroup, startUrl: 
     private val urlBar: TextView = root.findViewById(R.id.urlBar)
     private val progress: ProgressBar = root.findViewById(R.id.progress)
     private val topBar: View = root.findViewById(R.id.topBar)
+    private val sniffBtn: Button = root.findViewById(R.id.sniffBtn)
     private val d = act.resources.displayMetrics.density
     private var mobileUa: String = ""
     private var desktopMode = true
@@ -63,6 +83,10 @@ class BrowserScreen(private val act: MainActivity, parent: ViewGroup, startUrl: 
     private var customCallback: WebChromeClient.CustomViewCallback? = null
     private var destroyed = false
     private var castArmed = false
+    // 视频嗅探：本页发现的视频地址（去重保序），每次新页面清空
+    private val detectedVideos = LinkedHashSet<String>()
+    // 嗅探视频的后台播放：加载完成后转后台
+    private var bgArmed = false
 
     /** 标签页标题变化时通知 MainActivity 刷新标签栏 */
     var onTabUpdate: (() -> Unit)? = null
@@ -109,9 +133,11 @@ class BrowserScreen(private val act: MainActivity, parent: ViewGroup, startUrl: 
         FocusKit.lift(homeBtn, 1.08f)
         FocusKit.lift(urlBar, 1.02f)
         FocusKit.lift(menuBtn, 1.08f)
+        FocusKit.lift(sniffBtn, 1.08f)
         homeBtn.setOnClickListener { pokeTopBar(); act.showHome() }
         urlBar.setOnClickListener { pokeTopBar(); showUrlDialog() }
         menuBtn.setOnClickListener { showMenu() }
+        sniffBtn.setOnClickListener { pokeTopBar(); showSniffDialog() }
 
         root.isFocusableInTouchMode = true
         root.requestFocus()
@@ -146,6 +172,9 @@ class BrowserScreen(private val act: MainActivity, parent: ViewGroup, startUrl: 
             override fun onPageStarted(view: WebView, url: String, favicon: Bitmap?) {
                 urlBar.text = prettyUrl(url)
                 progress.visibility = View.VISIBLE
+                // 新页面：清空上页嗅探到的视频（bgArmed 不清，随 castArmed 模式在 finish 时消费）
+                synchronized(detectedVideos) { detectedVideos.clear() }
+                updateSniffBtn()
                 pokeTopBar()
                 onTabUpdate?.invoke()
             }
@@ -153,6 +182,8 @@ class BrowserScreen(private val act: MainActivity, parent: ViewGroup, startUrl: 
             override fun onPageFinished(view: WebView, url: String) {
                 progress.visibility = View.GONE
                 view.evaluateJavascript(FOCUS_CSS, null)
+                // 视频嗅探：JS 收集页面内 <video> 地址
+                probePageVideos()
                 val t = view.title
                 val u = view.url
                 if (!t.isNullOrBlank() && !u.isNullOrBlank()) act.store.addHistory(t, u)
@@ -160,16 +191,31 @@ class BrowserScreen(private val act: MainActivity, parent: ViewGroup, startUrl: 
                     castArmed = false
                     tryCastPlay()
                 }
+                if (bgArmed) {
+                    bgArmed = false
+                    startBackgroundAudio()
+                }
                 onTabUpdate?.invoke()
             }
 
-            /** 去广告：子资源 URL 命中规则直接返回空响应 */
+            /**
+             * 去广告 + 视频嗅探：
+             * 子资源 URL 命中广告规则直接返回空响应；
+             * 命中视频后缀的记入 detectedVideos（后台线程，UI 更新 post 回主线程）。
+             */
             override fun shouldInterceptRequest(
                 view: WebView,
                 request: WebResourceRequest
             ): WebResourceResponse? {
-                if (!request.isForMainFrame && AdBlocker.shouldBlock(request.url.toString())) {
-                    return AdBlocker.emptyResponse()
+                if (!request.isForMainFrame) {
+                    val url = request.url.toString()
+                    if (AdBlocker.shouldBlock(url)) {
+                        return AdBlocker.emptyResponse()
+                    }
+                    if (isVideoUrl(url)) {
+                        val added = synchronized(detectedVideos) { detectedVideos.add(url) }
+                        if (added) webView.post { updateSniffBtn() }
+                    }
                 }
                 return super.shouldInterceptRequest(view, request)
             }
@@ -412,6 +458,103 @@ class BrowserScreen(private val act: MainActivity, parent: ViewGroup, startUrl: 
             list.addView(row)
         }
         dlg.show()
+    }
+
+    // ---------- 视频嗅探 ----------
+    /** JS 探测页面内 <video> 标签地址，合并进 detectedVideos */
+    private fun probePageVideos() {
+        if (destroyed) return
+        webView.evaluateJavascript(VIDEO_PROBE_JS) { result ->
+            if (destroyed) return@evaluateJavascript
+            try {
+                val arr = JSONArray(result)
+                var added = false
+                for (i in 0 until arr.length()) {
+                    val u = arr.optString(i)
+                    if (u.isNotBlank() && synchronized(detectedVideos) { detectedVideos.add(u) }) added = true
+                }
+                if (added) updateSniffBtn()
+            } catch (_: Exception) {
+            }
+        }
+    }
+
+    /** 顶部栏嗅探按钮：有视频时显示数量 */
+    private fun updateSniffBtn() {
+        if (destroyed) return
+        val (empty, count) = synchronized(detectedVideos) { Pair(detectedVideos.isEmpty(), detectedVideos.size) }
+        if (empty) {
+            sniffBtn.visibility = View.GONE
+        } else {
+            sniffBtn.text = "🎬$count"
+            sniffBtn.visibility = View.VISIBLE
+        }
+    }
+
+    /** 地址显示名：文件名 + 域名 */
+    private fun videoLabel(url: String): String {
+        return try {
+            val uri = Uri.parse(url)
+            val seg = uri.lastPathSegment?.substringBefore("?")?.trim().orEmpty()
+            val host = uri.host.orEmpty()
+            val name = when {
+                seg.isBlank() -> host.ifBlank { url.take(48) }
+                seg.length > 30 -> "…${seg.takeLast(28)}"
+                else -> seg
+            }
+            if (seg.isNotBlank() && host.isNotBlank()) "$name\n$host" else name
+        } catch (_: Exception) {
+            url.take(48)
+        }
+    }
+
+    /** 嗅探列表对话框 */
+    private fun showSniffDialog() {
+        val videos = synchronized(detectedVideos) { detectedVideos.toList() }
+        if (videos.isEmpty()) {
+            Toast.makeText(act, "本页暂未发现视频", Toast.LENGTH_SHORT).show()
+            return
+        }
+        val labels = videos.map { videoLabel(it) }.toTypedArray()
+        AlertDialog.Builder(act)
+            .setTitle("发现 ${videos.size} 个视频")
+            .setItems(labels) { _, which -> showVideoActions(videos[which]) }
+            .setNegativeButton("关闭", null)
+            .show()
+    }
+
+    /** 单个视频的操作：播放 / 下载 / 后台播放 */
+    private fun showVideoActions(url: String) {
+        val items = arrayOf("▶️ 播放", "⬇️ 下载", "🎧 后台播放")
+        AlertDialog.Builder(act)
+            .setTitle(videoLabel(url).replace("\n", " · "))
+            .setItems(items) { _, which ->
+                when (which) {
+                    0 -> playSniffed(url)
+                    1 -> act.startDownload(url, DESKTOP_UA, "", "")
+                    2 -> {
+                        bgArmed = true
+                        webView.loadUrl(url)
+                    }
+                }
+            }
+            .setNegativeButton("取消", null)
+            .show()
+    }
+
+    /** 播放嗅探到的视频：HLS 走播放器，其他走 WebView */
+    private fun playSniffed(url: String) {
+        if (url.lowercase().substringBefore("?").substringBefore("#").endsWith(".m3u8")) {
+            val intent = Intent(act, PlayerActivity::class.java).apply {
+                putStringArrayListExtra("titles", arrayListOf(videoLabel(url).replace("\n", " ")))
+                putStringArrayListExtra("urls", arrayListOf(url))
+                putStringArrayListExtra("logos", arrayListOf(""))
+                putExtra("index", 0)
+            }
+            act.startActivity(intent)
+        } else {
+            act.openUrl(url)
+        }
     }
 
     /** 后台音频：把当前 WebView 交给前台 Service 保活，通知栏可暂停/关闭 */

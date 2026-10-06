@@ -38,5 +38,10 @@
             android:name=".AudioService"
             android:foregroundServiceType="mediaPlayback"
             android:exported="false" />
+        <!-- 直播播放器：ExoPlayer 全屏 -->
+        <activity
+            android:name=".PlayerActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:exported="false" />
     </application>
 </manifest>
