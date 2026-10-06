@@ -41,6 +41,7 @@ class MainActivity : Activity(), CompanionListener {
     private lateinit var tabBarScroll: HorizontalScrollView
     private lateinit var tabBar: LinearLayout
     private var homeView: android.view.View? = null
+    private var videoView: android.view.View? = null
 
     private val tabs = mutableListOf<BrowserScreen>()
     private var currentTab = -1
@@ -82,7 +83,7 @@ class MainActivity : Activity(), CompanionListener {
         super.onDestroy()
     }
 
-    // ---------- 首页 / 标签页 ----------
+    // ---------- 首页 / 标签页 / 视频源 ----------
     fun showHome() {
         if (homeView == null) {
             HomeScreen(this, container)
@@ -90,6 +91,15 @@ class MainActivity : Activity(), CompanionListener {
         }
         currentTab = -1
         showOnly(homeView!!)
+    }
+
+    fun showVideoSources() {
+        if (videoView == null) {
+            VideoSourceScreen(this, container)
+            videoView = container.getChildAt(container.childCount - 1)
+        }
+        currentTab = -1
+        showOnly(videoView!!)
     }
 
     fun openUrl(raw: String) {
@@ -144,7 +154,7 @@ class MainActivity : Activity(), CompanionListener {
             c.visibility = if (c === v) android.view.View.VISIBLE else android.view.View.GONE
         }
         tabBarScroll.visibility =
-            if (v !== homeView && tabs.isNotEmpty()) android.view.View.VISIBLE
+            if (v !== homeView && v !== videoView && tabs.isNotEmpty()) android.view.View.VISIBLE
             else android.view.View.GONE
     }
 
@@ -209,6 +219,10 @@ class MainActivity : Activity(), CompanionListener {
         val b = currentBrowser()
         if (b != null) {
             if (b.goBack()) return
+            showHome()
+            return
+        }
+        if (videoView?.visibility == android.view.View.VISIBLE) {
             showHome()
             return
         }

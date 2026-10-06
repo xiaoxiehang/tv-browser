@@ -12,6 +12,11 @@
     <string name="action_add_desc">收藏常用网站</string>
     <string name="action_clear">清空历史</string>
     <string name="action_clear_desc">删除浏览记录</string>
+    <string name="action_video">视频源</string>
+    <string name="action_video_desc">合法片源 · 自己添加</string>
+    <string name="video_title">视频源</string>
+    <string name="video_legal_notice">请只添加合法视频源</string>
+    <string name="video_my_sources">我的源</string>
     <string name="empty_bookmark">还没有书签\n打开网页后按菜单键，或点上方「添加书签」</string>
     <string name="empty_history">还没有浏览记录，去看看外面的世界吧</string>
     <string name="menu">菜单</string>

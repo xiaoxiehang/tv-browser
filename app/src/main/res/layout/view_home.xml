@@ -232,6 +232,44 @@
                     android:textColor="@color/muted"
                     android:layout_marginTop="6dp" />
             </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/videoCard"
+                android:elevation="2dp"
+                android:layout_width="0dp"
+                android:layout_height="172dp"
+                android:layout_weight="1"
+                android:layout_marginStart="10dp"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:background="@drawable/bg_card"
+                android:focusable="true"
+                android:clickable="true">
+
+                <ImageView
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:src="@drawable/ic_video"
+                    android:background="@drawable/bg_icon_tile"
+                    android:padding="10dp"
+                    android:layout_marginBottom="12dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/action_video"
+                    android:textSize="24sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/ink" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/action_video_desc"
+                    android:textSize="15sp"
+                    android:textColor="@color/muted"
+                    android:layout_marginTop="6dp" />
+            </LinearLayout>
         </LinearLayout>
 
         <!-- 书签 -->

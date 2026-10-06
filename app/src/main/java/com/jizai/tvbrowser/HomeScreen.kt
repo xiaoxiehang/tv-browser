@@ -49,11 +49,14 @@ class HomeScreen(private val act: MainActivity, parent: ViewGroup) {
         val companionCard = root.findViewById<View>(R.id.companionCard)
         val addCard = root.findViewById<View>(R.id.addCard)
         val clearCard = root.findViewById<View>(R.id.clearCard)
+        val videoCard = root.findViewById<View>(R.id.videoCard)
         FocusKit.lift(companionCard)
         FocusKit.lift(addCard)
         FocusKit.lift(clearCard)
+        FocusKit.lift(videoCard)
         companionCard.setOnClickListener { QrDialog.show(act) }
         addCard.setOnClickListener { showAddDialog() }
+        videoCard.setOnClickListener { act.showVideoSources() }
         clearCard.setOnClickListener {
             AlertDialog.Builder(act)
                 .setTitle("清空历史记录？")
