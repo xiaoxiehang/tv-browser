@@ -1,22 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- 语音按钮：圆形粉 tint，焦点态粉色描边 -->
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:state_focused="true">
-        <shape android:shape="rectangle">
-            <solid android:color="#1AFF385C" />
+        <shape android:shape="oval">
+            <solid android:color="@color/tile_pink_bg" />
             <stroke android:width="2dp" android:color="@color/focus_ring" />
-            <corners android:radius="16dp" />
         </shape>
     </item>
     <item android:state_pressed="true">
-        <shape android:shape="rectangle">
-            <solid android:color="#2BFF385C" />
-            <corners android:radius="16dp" />
+        <shape android:shape="oval">
+            <solid android:color="#FADCE3" />
         </shape>
     </item>
     <item>
-        <shape android:shape="rectangle">
-            <solid android:color="#1AFF385C" />
-            <corners android:radius="16dp" />
+        <shape android:shape="oval">
+            <solid android:color="@color/tile_pink_bg" />
         </shape>
     </item>
 </selector>

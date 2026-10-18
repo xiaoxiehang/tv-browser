@@ -58,22 +58,31 @@ class VideoSourceScreen(private val act: MainActivity, parent: ViewGroup) {
         sources.forEachIndexed { i, s ->
             sourceRow.addView(makeSourceChip(s, i))
         }
-        // ＋ 添加源
-        val add = TextView(act).apply {
-            text = "＋ 添加源"
-            textSize = 20f
-            setTextColor(0xFFFF385C.toInt())
-            gravity = Gravity.CENTER
+        // ＋ 添加源：图标 + 文字
+        val add = LinearLayout(act).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER_VERTICAL
             setBackgroundResource(R.drawable.bg_card)
             isFocusable = true
             isClickable = true
             elevation = dp(2).toFloat()
-            setPadding(dp(28), dp(20), dp(28), dp(20))
+            setPadding(dp(28), dp(20), dp(32), dp(20))
         }
         add.layoutParams = LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.WRAP_CONTENT,
             LinearLayout.LayoutParams.WRAP_CONTENT
         ).apply { setMargins(dp(8), dp(8), dp(8), dp(8)) }
+        add.addView(ImageView(act).apply {
+            setImageResource(R.drawable.ic_add)
+            setColorFilter(act.getColor(R.color.brand))
+            layoutParams = LinearLayout.LayoutParams(dp(28), dp(28))
+        })
+        add.addView(TextView(act).apply {
+            text = "添加源"
+            textSize = 20f
+            setTextColor(0xFFFF385C.toInt())
+            setPadding(dp(10), 0, 0, 0)
+        })
         FocusKit.lift(add, 1.05f)
         add.setOnClickListener { showEditDialog(-1) }
         sourceRow.addView(add)
@@ -347,12 +356,18 @@ class VideoSourceScreen(private val act: MainActivity, parent: ViewGroup) {
             )
             scaleType = ImageView.ScaleType.CENTER_CROP
             setBackgroundColor(0xFFF1F1F3.toInt())
+            background = android.graphics.drawable.GradientDrawable().apply {
+                shape = android.graphics.drawable.GradientDrawable.RECTANGLE
+                cornerRadius = dp(10).toFloat()
+                setColor(0xFFF1F1F3.toInt())
+            }
+            clipToOutline = true
         }
         card.addView(iv)
         VideoImageLoader.load(item.cover, iv)
         card.addView(TextView(act).apply {
             text = item.title
-            textSize = 19f
+            textSize = 18f
             setTextColor(0xFF1D1D1F.toInt())
             maxLines = 2
             setPadding(0, dp(10), 0, dp(4))

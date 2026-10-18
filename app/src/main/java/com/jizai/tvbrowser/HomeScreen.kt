@@ -108,35 +108,73 @@ class HomeScreen(private val act: MainActivity, parent: ViewGroup) {
         historyCount.text = if (his.isEmpty()) "" else "${his.size} 条"
     }
 
-    /** 书签卡片：标题 + 域名，纯白极简 */
+    /** 书签字母砖配色：6 组底色/字色，按域名 hash 取 */
+    private val tileBgs = intArrayOf(
+        R.color.tile0_bg, R.color.tile1_bg, R.color.tile2_bg,
+        R.color.tile3_bg, R.color.tile4_bg, R.color.tile5_bg
+    )
+    private val tileFgs = intArrayOf(
+        R.color.tile0_fg, R.color.tile1_fg, R.color.tile2_fg,
+        R.color.tile3_fg, R.color.tile4_fg, R.color.tile5_fg
+    )
+
+    /** 书签卡片：字母砖 + 标题 + 域名 */
     private fun makeBookmarkCard(b: Bookmark): View {
         val card = LinearLayout(act).apply {
-            orientation = LinearLayout.VERTICAL
+            orientation = LinearLayout.HORIZONTAL
             setBackgroundResource(R.drawable.bg_card)
             isFocusable = true
             isClickable = true
             elevation = dp(2).toFloat()
-            setPadding(dp(26), dp(24), dp(26), dp(24))
+            setPadding(dp(24), dp(24), dp(24), dp(24))
             gravity = Gravity.CENTER_VERTICAL
         }
-        card.layoutParams = LinearLayout.LayoutParams(dp(280), dp(148)).apply {
+        card.layoutParams = LinearLayout.LayoutParams(dp(300), dp(168)).apply {
             setMargins(dp(8), dp(8), dp(8), dp(8))
         }
 
         val title = b.title.ifBlank { b.url }
-        card.addView(TextView(act).apply {
+        val domain = domainOf(b.url)
+        val pair = (domain.hashCode() and Int.MAX_VALUE) % tileBgs.size
+        val letter = title.firstOrNull()?.toString()?.uppercase() ?: "·"
+
+        val tile = TextView(act).apply {
+            text = letter
+            textSize = 28f
+            setTypeface(typeface, android.graphics.Typeface.BOLD)
+            gravity = Gravity.CENTER
+            setTextColor(act.getColor(tileFgs[pair]))
+            background = android.graphics.drawable.GradientDrawable().apply {
+                shape = android.graphics.drawable.GradientDrawable.RECTANGLE
+                cornerRadius = dp(16).toFloat()
+                setColor(act.getColor(tileBgs[pair]))
+            }
+        }
+        tile.layoutParams = LinearLayout.LayoutParams(dp(64), dp(64))
+        card.addView(tile)
+
+        val col = LinearLayout(act).apply {
+            orientation = LinearLayout.VERTICAL
+            gravity = Gravity.CENTER_VERTICAL
+        }
+        col.layoutParams = LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.WRAP_CONTENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT
+        ).apply { marginStart = dp(18) }
+        col.addView(TextView(act).apply {
             text = title
-            textSize = 21f
+            textSize = 20f
             setTextColor(0xFF1D1D1F.toInt())
             maxLines = 1
         })
-        card.addView(TextView(act).apply {
-            text = domainOf(b.url)
+        col.addView(TextView(act).apply {
+            text = domain
             textSize = 14f
             setTextColor(0xFFA1A1A6.toInt())
             maxLines = 1
-            setPadding(0, dp(8), 0, 0)
+            setPadding(0, dp(6), 0, 0)
         })
+        card.addView(col)
 
         card.setOnClickListener { act.openUrl(b.url) }
         card.setOnLongClickListener {
@@ -151,7 +189,7 @@ class HomeScreen(private val act: MainActivity, parent: ViewGroup) {
         return card
     }
 
-    /** 历史卡片：标题 + 网址，更扁平 */
+    /** 历史卡片：无字母砖、更扁平，与书签区分 */
     private fun makeHistoryCard(h: Bookmark): View {
         val card = LinearLayout(act).apply {
             orientation = LinearLayout.VERTICAL
@@ -159,16 +197,16 @@ class HomeScreen(private val act: MainActivity, parent: ViewGroup) {
             isFocusable = true
             isClickable = true
             elevation = dp(2).toFloat()
-            setPadding(dp(22), dp(18), dp(22), dp(18))
+            setPadding(dp(24), dp(20), dp(24), dp(20))
             gravity = Gravity.CENTER_VERTICAL
         }
-        card.layoutParams = LinearLayout.LayoutParams(dp(330), dp(132)).apply {
+        card.layoutParams = LinearLayout.LayoutParams(dp(340), dp(124)).apply {
             setMargins(dp(8), dp(8), dp(8), dp(8))
         }
         val title = h.title.ifBlank { h.url }
         card.addView(TextView(act).apply {
             text = title
-            textSize = 19f
+            textSize = 18f
             setTextColor(0xFF1D1D1F.toInt())
             maxLines = 1
         })

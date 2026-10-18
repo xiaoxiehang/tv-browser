@@ -22,6 +22,7 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
@@ -72,7 +73,7 @@ class BrowserScreen(private val act: MainActivity, parent: ViewGroup, startUrl: 
     private val urlBar: TextView = root.findViewById(R.id.urlBar)
     private val progress: ProgressBar = root.findViewById(R.id.progress)
     private val topBar: View = root.findViewById(R.id.topBar)
-    private val sniffBtn: Button = root.findViewById(R.id.sniffBtn)
+    private val sniffBtn: ImageButton = root.findViewById(R.id.sniffBtn)
     private val d = act.resources.displayMetrics.density
     private var mobileUa: String = ""
     private var desktopMode = true
@@ -486,7 +487,7 @@ class BrowserScreen(private val act: MainActivity, parent: ViewGroup, startUrl: 
         if (empty) {
             sniffBtn.visibility = View.GONE
         } else {
-            sniffBtn.text = "🎬$count"
+            sniffBtn.contentDescription = "发现 $count 个可播放视频"
             sniffBtn.visibility = View.VISIBLE
         }
     }

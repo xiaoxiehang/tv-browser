@@ -14,4 +14,27 @@
     <color name="brand_dark">#D9325A</color>
     <color name="accent">#FF385C</color>
     <color name="accent_dark">#D9325A</color>
+
+    <!-- 快捷操作图标：四色微 tint 体系 -->
+    <color name="tile_pink_bg">#FFE9EE</color>
+    <color name="tile_blue_bg">#E8F1FE</color>
+    <color name="tile_orange_bg">#FFF3E2</color>
+    <color name="tile_violet_bg">#F1EAFE</color>
+    <color name="action_blue">#0A84FF</color>
+    <color name="action_orange">#E87500</color>
+    <color name="action_violet">#8E4EC6</color>
+
+    <!-- 书签字母砖：6 组底色/字色 -->
+    <color name="tile0_bg">#FDE8EC</color>
+    <color name="tile0_fg">#D9325A</color>
+    <color name="tile1_bg">#E8F1FE</color>
+    <color name="tile1_fg">#0A64D8</color>
+    <color name="tile2_bg">#E4F5EA</color>
+    <color name="tile2_fg">#178A4C</color>
+    <color name="tile3_bg">#FFF1DE</color>
+    <color name="tile3_fg">#C76A00</color>
+    <color name="tile4_bg">#F0EAFD</color>
+    <color name="tile4_fg">#7E3FC4</color>
+    <color name="tile5_bg">#DFF5F1</color>
+    <color name="tile5_fg">#0E7C6F</color>
 </resources>

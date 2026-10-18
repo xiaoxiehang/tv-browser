@@ -61,15 +61,17 @@
             android:focusable="true"
             android:clickable="true" />
 
-        <Button
+        <ImageButton
             android:id="@+id/sniffBtn"
-            android:layout_width="wrap_content"
+            android:layout_width="60dp"
             android:layout_height="60dp"
             android:layout_marginStart="10dp"
             android:background="@drawable/bg_card"
-            android:text="🎬"
-            android:textSize="20sp"
-            android:textColor="@color/ink"
+            android:src="@drawable/ic_sniff"
+            android:tint="@color/ink"
+            android:tintMode="src_in"
+            android:padding="16dp"
+            android:contentDescription="@string/sniff_desc"
             android:focusable="true"
             android:clickable="true"
             android:visibility="gone" />

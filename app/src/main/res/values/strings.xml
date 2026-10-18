@@ -21,4 +21,6 @@
     <string name="empty_history">还没有浏览记录，去看看外面的世界吧</string>
     <string name="menu">菜单</string>
     <string name="qr_title">手机遥控</string>
+    <string name="voice_search">语音搜索</string>
+    <string name="sniff_desc">嗅探到的视频</string>
 </resources>
