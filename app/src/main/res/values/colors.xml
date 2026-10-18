@@ -1,40 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- 苹果风浅色主题 -->
-    <color name="bg">#F5F5F7</color>
-    <color name="bg_top">#FFFFFF</color>
-    <color name="card">#FFFFFF</color>
-    <color name="card_border">#E5E5EA</color>
-    <color name="card_pressed">#EFEFF4</color>
+    <!-- 暗夜沉浸：深色 TV 主题（10-foot 暗光客厅） -->
+    <color name="bg">#0B0E14</color>
+    <color name="bg_top">#12161F</color>
+    <color name="card">#171C28</color>
+    <color name="card_border">#232A3B</color>
+    <color name="card_pressed">#1F2534</color>
     <color name="focus_ring">#FF385C</color>
-    <color name="ink">#1D1D1F</color>
-    <color name="muted">#6E6E73</color>
-    <color name="faint">#A1A1A6</color>
+    <color name="ink">#F2F4F8</color>
+    <color name="muted">#9AA3B2</color>
+    <color name="faint">#6B7280</color>
     <color name="brand">#FF385C</color>
     <color name="brand_dark">#D9325A</color>
     <color name="accent">#FF385C</color>
     <color name="accent_dark">#D9325A</color>
 
-    <!-- 快捷操作图标：四色微 tint 体系 -->
-    <color name="tile_pink_bg">#FFE9EE</color>
-    <color name="tile_blue_bg">#E8F1FE</color>
-    <color name="tile_orange_bg">#FFF3E2</color>
-    <color name="tile_violet_bg">#F1EAFE</color>
-    <color name="action_blue">#0A84FF</color>
-    <color name="action_orange">#E87500</color>
-    <color name="action_violet">#8E4EC6</color>
+    <!-- 快捷操作图标：四色微 tint 体系（深色版） -->
+    <color name="tile_pink_bg">#3E1C26</color>
+    <color name="tile_blue_bg">#1A2C4E</color>
+    <color name="tile_orange_bg">#4A3418</color>
+    <color name="tile_violet_bg">#342458</color>
+    <color name="action_blue">#78AAFF</color>
+    <color name="action_orange">#FFBE6E</color>
+    <color name="action_violet">#BE96FF</color>
 
-    <!-- 书签字母砖：6 组底色/字色 -->
-    <color name="tile0_bg">#FDE8EC</color>
-    <color name="tile0_fg">#D9325A</color>
-    <color name="tile1_bg">#E8F1FE</color>
-    <color name="tile1_fg">#0A64D8</color>
-    <color name="tile2_bg">#E4F5EA</color>
-    <color name="tile2_fg">#178A4C</color>
-    <color name="tile3_bg">#FFF1DE</color>
-    <color name="tile3_fg">#C76A00</color>
-    <color name="tile4_bg">#F0EAFD</color>
-    <color name="tile4_fg">#7E3FC4</color>
-    <color name="tile5_bg">#DFF5F1</color>
-    <color name="tile5_fg">#0E7C6F</color>
+    <!-- 书签字母砖：6 组底色/字色（深色版） -->
+    <color name="tile0_bg">#3E1C26</color>
+    <color name="tile0_fg">#FF7896</color>
+    <color name="tile1_bg">#1A2C4E</color>
+    <color name="tile1_fg">#78AAFF</color>
+    <color name="tile2_bg">#1A3E2C</color>
+    <color name="tile2_fg">#6ED296</color>
+    <color name="tile3_bg">#4A3418</color>
+    <color name="tile3_fg">#FFBE6E</color>
+    <color name="tile4_bg">#342458</color>
+    <color name="tile4_fg">#BE96FF</color>
+    <color name="tile5_bg">#18423C</color>
+    <color name="tile5_fg">#6EDCCB</color>
 </resources>

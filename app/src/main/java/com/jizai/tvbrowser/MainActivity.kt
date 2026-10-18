@@ -177,13 +177,13 @@ class MainActivity : Activity(), CompanionListener {
             chip.addView(TextView(this).apply {
                 text = t.take(10)
                 textSize = 17f
-                setTextColor(if (i == currentTab) 0xFFFF385C.toInt() else 0xFF1D1D1F.toInt())
+                setTextColor(if (i == currentTab) 0xFFFF385C.toInt() else getColor(R.color.ink))
                 maxLines = 1
             })
             val close = TextView(this).apply {
                 text = " ×"
                 textSize = 20f
-                setTextColor(0xFFA1A1A6.toInt())
+                setTextColor(getColor(R.color.faint))
                 isFocusable = true
                 isClickable = true
                 setPadding(dp(10), dp(6), dp(6), dp(6))

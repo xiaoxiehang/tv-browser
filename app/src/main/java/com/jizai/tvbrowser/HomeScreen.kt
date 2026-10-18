@@ -164,13 +164,13 @@ class HomeScreen(private val act: MainActivity, parent: ViewGroup) {
         col.addView(TextView(act).apply {
             text = title
             textSize = 20f
-            setTextColor(0xFF1D1D1F.toInt())
+            setTextColor(act.getColor(R.color.ink))
             maxLines = 1
         })
         col.addView(TextView(act).apply {
             text = domain
             textSize = 14f
-            setTextColor(0xFFA1A1A6.toInt())
+            setTextColor(act.getColor(R.color.faint))
             maxLines = 1
             setPadding(0, dp(6), 0, 0)
         })
@@ -207,13 +207,13 @@ class HomeScreen(private val act: MainActivity, parent: ViewGroup) {
         card.addView(TextView(act).apply {
             text = title
             textSize = 18f
-            setTextColor(0xFF1D1D1F.toInt())
+            setTextColor(act.getColor(R.color.ink))
             maxLines = 1
         })
         card.addView(TextView(act).apply {
             text = domainOf(h.url)
             textSize = 14f
-            setTextColor(0xFFA1A1A6.toInt())
+            setTextColor(act.getColor(R.color.faint))
             maxLines = 1
             setPadding(0, dp(6), 0, 0)
         })
@@ -231,8 +231,8 @@ class HomeScreen(private val act: MainActivity, parent: ViewGroup) {
         return EditText(act).apply {
             this.hint = hint
             textSize = 20f
-            setTextColor(0xFF1D1D1F.toInt())
-            setHintTextColor(0xFFA1A1A6.toInt())
+            setTextColor(act.getColor(R.color.ink))
+            setHintTextColor(act.getColor(R.color.faint))
             setBackgroundResource(R.drawable.bg_search_idle)
             setPadding(dp(24), dp(28), dp(24), dp(28))
             val lp = LinearLayout.LayoutParams(

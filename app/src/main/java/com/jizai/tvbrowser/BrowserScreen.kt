@@ -381,8 +381,8 @@ class BrowserScreen(private val act: MainActivity, parent: ViewGroup, startUrl: 
         val et = EditText(act).apply {
             setText(webView.url ?: "")
             textSize = 20f
-            setTextColor(0xFF1D1D1F.toInt())
-            setHintTextColor(0xFFA1A1A6.toInt())
+            setTextColor(act.getColor(R.color.ink))
+            setHintTextColor(act.getColor(R.color.faint))
             setBackgroundResource(R.drawable.bg_search_idle)
             setPadding(dp(24), dp(28), dp(24), dp(28))
             setSingleLine()
@@ -444,7 +444,7 @@ class BrowserScreen(private val act: MainActivity, parent: ViewGroup, startUrl: 
             val row = TextView(act).apply {
                 text = label
                 textSize = 22f
-                setTextColor(0xFF1D1D1F.toInt())
+                setTextColor(act.getColor(R.color.ink))
                 setBackgroundResource(R.drawable.bg_card)
                 isFocusable = true
                 isClickable = true

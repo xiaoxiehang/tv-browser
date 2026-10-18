@@ -30,7 +30,7 @@ object QrDialog {
         layout.addView(TextView(act).apply {
             text = "配对码"
             textSize = 16f
-            setTextColor(0xFF6E6E73.toInt())
+            setTextColor(act.getColor(R.color.muted))
             gravity = Gravity.CENTER
             setPadding(0, (28 * d).toInt(), 0, 0)
         })
@@ -48,7 +48,7 @@ object QrDialog {
         layout.addView(TextView(act).apply {
             text = "手机和电视连上同一个 Wi-Fi\n用手机浏览器扫码，输入配对码即可连接"
             textSize = 16f
-            setTextColor(0xFF6E6E73.toInt())
+            setTextColor(act.getColor(R.color.muted))
             gravity = Gravity.CENTER
             setPadding(0, (20 * d).toInt(), 0, 0)
             setLineSpacing(6 * d, 1f)

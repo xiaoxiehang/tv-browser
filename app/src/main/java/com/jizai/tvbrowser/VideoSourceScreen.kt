@@ -111,7 +111,7 @@ class VideoSourceScreen(private val act: MainActivity, parent: ViewGroup) {
         chip.addView(TextView(act).apply {
             text = (if (s.enabled) "" else "（停用）") + s.name
             textSize = 20f
-            setTextColor(if (i == currentIndex) 0xFFFF385C.toInt() else 0xFF1D1D1F.toInt())
+            setTextColor(if (i == currentIndex) 0xFFFF385C.toInt() else act.getColor(R.color.ink))
             maxLines = 1
         })
         FocusKit.lift(chip, 1.05f)
@@ -205,7 +205,7 @@ class VideoSourceScreen(private val act: MainActivity, parent: ViewGroup) {
         layout.addView(TextView(act).apply {
             text = "请只添加合法视频源"
             textSize = 15f
-            setTextColor(0xFFA1A1A6.toInt())
+            setTextColor(act.getColor(R.color.faint))
             setPadding(0, dp(16), 0, 0)
         })
         AlertDialog.Builder(act)
@@ -234,8 +234,8 @@ class VideoSourceScreen(private val act: MainActivity, parent: ViewGroup) {
             this.hint = hint
             setText(value)
             textSize = 20f
-            setTextColor(0xFF1D1D1F.toInt())
-            setHintTextColor(0xFFA1A1A6.toInt())
+            setTextColor(act.getColor(R.color.ink))
+            setHintTextColor(act.getColor(R.color.faint))
             setBackgroundResource(R.drawable.bg_search_idle)
             setPadding(dp(24), dp(26), dp(24), dp(26))
             val lp = LinearLayout.LayoutParams(
@@ -355,11 +355,11 @@ class VideoSourceScreen(private val act: MainActivity, parent: ViewGroup) {
                 LinearLayout.LayoutParams.MATCH_PARENT, imgH
             )
             scaleType = ImageView.ScaleType.CENTER_CROP
-            setBackgroundColor(0xFFF1F1F3.toInt())
+            setBackgroundColor(act.getColor(R.color.card_border))
             background = android.graphics.drawable.GradientDrawable().apply {
                 shape = android.graphics.drawable.GradientDrawable.RECTANGLE
                 cornerRadius = dp(10).toFloat()
-                setColor(0xFFF1F1F3.toInt())
+                setColor(act.getColor(R.color.card_border))
             }
             clipToOutline = true
         }
@@ -368,7 +368,7 @@ class VideoSourceScreen(private val act: MainActivity, parent: ViewGroup) {
         card.addView(TextView(act).apply {
             text = item.title
             textSize = 18f
-            setTextColor(0xFF1D1D1F.toInt())
+            setTextColor(act.getColor(R.color.ink))
             maxLines = 2
             setPadding(0, dp(10), 0, dp(4))
         })
@@ -401,7 +401,7 @@ class VideoSourceScreen(private val act: MainActivity, parent: ViewGroup) {
         layout.addView(TextView(act).apply {
             text = item.desc
             textSize = 19f
-            setTextColor(0xFF6E6E73.toInt())
+            setTextColor(act.getColor(R.color.muted))
         })
         AlertDialog.Builder(act)
             .setTitle(item.title)
